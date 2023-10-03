@@ -137,6 +137,10 @@ if ( ! class_exists( 'swp_acf_field_svg_icon' ) )  {
                 foreach ( $value as $i => $v ) {
                     $value[ $i ] = isset( $field['choices'][ $v ] ) ? $field['choices'][ $v ] : array();
 
+                     if(!is_array($value[ $i ])) {
+                        $value[ $i ] = json_decode($value[ $i ],true);
+                    }
+                    
                     if ( ! empty( $value[ $i ] ) ) {
                         $value[ $i ]['_file_url'] = $field['file']['url'];
                     }
@@ -144,6 +148,10 @@ if ( ! class_exists( 'swp_acf_field_svg_icon' ) )  {
             } else {
                 $value = isset( $field['choices'][ $value ] ) ? $field['choices'][ $value ] : array();
 
+                if(!is_array($value)) {
+                    $value = json_decode($value,true);
+                }
+                
                 if ( ! empty( $value ) ) {
                     $value['_file_url'] = $field['file']['url'];
                 }
@@ -206,6 +214,10 @@ if ( ! class_exists( 'swp_acf_field_svg_icon' ) )  {
             $field['choices'] = apply_filters( "acf/fields/svg_icon/symbols", $field['choices'], $field );
             $field['choices'] = apply_filters( "acf/fields/svg_icon/symbols/name={$field['_name']}", $field['choices'], $field );
             $field['choices'] = apply_filters( "acf/fields/svg_icon/symbols/key={$field['key']}", $field['choices'], $field );
+
+            foreach ($field['choices'] as $key => $choice) {
+                $field['choices'][$key] = json_encode($choice);
+            }
 
             return $field;
         }
@@ -316,6 +328,12 @@ if ( ! class_exists( 'swp_acf_field_svg_icon' ) )  {
                 'name'  => $field['name'],
                 'value' => $v
             ) );
+
+            foreach ($field['choices'] as $key => $choice) {
+                if(!is_array($choice)){
+                    $field['choices'][$key] = json_decode($choice,true);
+                }
+            }
 
             echo '<select ' . acf_esc_attr( $atts ) . '>';
                 if ( ! empty( $field['choices'] ) ) {
